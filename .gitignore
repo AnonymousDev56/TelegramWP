@@ -7,3 +7,5 @@ venv/
 staticfiles/
 media/videos/*.mp4
 !.gitkeep
+
+*:Zone.Identifier
