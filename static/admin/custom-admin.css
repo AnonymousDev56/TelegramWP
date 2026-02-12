@@ -1,0 +1,42 @@
+:root {
+  --primary: #0a6f8f;
+  --secondary: #f3f7fb;
+  --accent: #064f66;
+  --link-fg: #0a6f8f;
+}
+
+body,
+#header,
+.module h2,
+.module caption,
+.inline-group h2,
+div.breadcrumbs {
+  font-family: Manrope, "Segoe UI", sans-serif;
+}
+
+#header {
+  background: linear-gradient(120deg, #0a6f8f, #146083);
+  color: #fff;
+}
+
+#site-name a {
+  color: #fff;
+  font-weight: 800;
+}
+
+.module {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  border-radius: 10px;
+}
+
+.dashboard .module table th {
+  width: 40%;
+}

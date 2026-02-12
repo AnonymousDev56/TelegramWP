@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: telegram-weather-publisher
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /health/
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "telegram-weather-publisher.onrender.com"
+      - key: TIME_ZONE
+        value: "Asia/Almaty"
+      - key: LOG_LEVEL
+        value: "INFO"
+      - key: WEB_CONCURRENCY
+        value: "1"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: "admin"
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: "admin@example.com"
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false

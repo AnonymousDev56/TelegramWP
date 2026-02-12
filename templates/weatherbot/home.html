@@ -1,0 +1,66 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Telegram Weather Publisher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'weatherbot/site.css' %}">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">Portfolio Project</p>
+      <h1>Telegram Weather Publisher</h1>
+      <p class="subtitle">Автоматическая публикация прогноза в Telegram по расписанию с управлением через Django Admin.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/admin/">Открыть админку</a>
+        <a class="btn btn-secondary" href="/health/">Healthcheck</a>
+      </div>
+    </section>
+
+    <section class="status-grid">
+      <article class="card">
+        <h2>Сервис</h2>
+        <p class="metric">{% if service_enabled %}Включен{% else %}Выключен{% endif %}</p>
+      </article>
+      <article class="card">
+        <h2>Город по умолчанию</h2>
+        <p class="metric">{{ default_city }}</p>
+      </article>
+      <article class="card">
+        <h2>Активные каналы</h2>
+        <p class="metric">{{ channels_count }}</p>
+      </article>
+      <article class="card">
+        <h2>Активные города</h2>
+        <p class="metric">{{ cities_count }}</p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Расписание публикаций</h2>
+      <ul>
+        {% for schedule in schedules %}
+          <li>{{ schedule.get_forecast_type_display }}: {{ schedule.publish_time|time:"H:i" }}</li>
+        {% empty %}
+          <li>Нет активных расписаний</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Быстрый старт</h2>
+      <ol>
+        <li>Добавить бота в Telegram-канал как администратора.</li>
+        <li>Заполнить модели <code>City</code>, <code>Channel</code> и <code>BotConfig</code> в админке.</li>
+        <li>Положить видео в <code>media/videos/</code>.</li>
+        <li>Проверить вручную: <code>python manage.py publish_forecast today</code>.</li>
+      </ol>
+    </section>
+  </main>
+</body>
+</html>

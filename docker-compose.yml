@@ -1,0 +1,24 @@
+services:
+  app:
+    build: .
+    container_name: telegram-weather-app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    command: ["web"]
+    restart: unless-stopped
+
+  scheduler:
+    build: .
+    container_name: telegram-weather-scheduler
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    command: ["scheduler"]
+    depends_on:
+      - app
+    restart: unless-stopped
