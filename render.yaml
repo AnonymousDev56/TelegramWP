@@ -26,3 +26,5 @@ services:
         sync: false
       - key: TELEGRAM_BOT_TOKEN
         sync: false
+      - key: DATABASE_URL
+        sync: false

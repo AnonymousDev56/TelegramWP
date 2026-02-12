@@ -131,6 +131,7 @@ python manage.py run_scheduler
 3. В env переменных Render обязательно задай:
    - `TELEGRAM_BOT_TOKEN`
    - `DJANGO_SUPERUSER_PASSWORD`
+   - `DATABASE_URL` (PostgreSQL URL)
 4. После деплоя открой:
    - `/` (главная)
    - `/admin/` (админка)
