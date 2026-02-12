@@ -2,7 +2,7 @@
 
 Серверный сервис на Python/Django, который публикует прогноз погоды в Telegram-каналы/группы по расписанию и управляется через Django Admin.
 
-Коротко: Django + Telegram Bot + Scheduler, автопостинг погоды (today/tomorrow/3 days), управление через admin, Docker-ready deploy.
+Django + Telegram Bot + Scheduler, автопостинг погоды (today/tomorrow/3 days), управление через admin, Docker-ready deploy.
 
 ## Что умеет
 
@@ -158,3 +158,5 @@ git branch -M main
 git remote add origin https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
 git push -u origin main
 ```
+
+Live demo: https://telegram-weather-publisher.onrender.com
