@@ -4,6 +4,17 @@
 
 Django + Telegram Bot + Scheduler, автопостинг погоды (today/tomorrow/3 days), управление через admin, Docker-ready deploy.
 
+<img width="1919" height="984" alt="Снимок экрана 2026-02-13 131242" src="https://github.com/user-attachments/assets/64057398-9d66-48a4-95d8-cbd18501e80e" />
+
+<img width="1919" height="997" alt="Снимок экрана 2026-02-13 131255" src="https://github.com/user-attachments/assets/6877939e-dacf-47d7-892f-ecc8b671d83b" />
+
+<img width="1919" height="1001" alt="Снимок экрана 2026-02-13 131304" src="https://github.com/user-attachments/assets/a13d2231-2910-400a-9f52-344102158067" />
+
+<img width="1261" height="929" alt="Снимок экрана 2026-02-13 131323" src="https://github.com/user-attachments/assets/3138d0e0-92af-439e-b570-74ea593de736" />
+
+<img width="1910" height="1000" alt="Снимок экрана 2026-02-13 131352" src="https://github.com/user-attachments/assets/17f2fe63-2c06-4135-ac3b-65ede6babb98" />
+
+
 ## Что умеет
 
 - Получает прогноз погоды (сегодня, завтра, 3 дня) через Open-Meteo API
