@@ -51,7 +51,14 @@ class WeatherPublisher:
                 continue
 
             try:
-                message_id = self.telegram.send_video(channel.chat_id, caption, video_path)
+                if video_path.exists():
+                    message_id = self.telegram.send_video(channel.chat_id, caption, video_path)
+                else:
+                    logger.warning(
+                        "Video file is missing, fallback to text message path=%s",
+                        video_path,
+                    )
+                    message_id = self.telegram.send_message(channel.chat_id, caption)
                 self._save_log(channel, city, forecast_type, target_date, True, message_id, "")
                 successful += 1
             except Exception as exc:  # noqa: BLE001

@@ -38,3 +38,19 @@ class TelegramClient:
         message_id = payload.get("result", {}).get("message_id")
         logger.info("Telegram message sent chat_id=%s message_id=%s", chat_id, message_id)
         return str(message_id)
+
+    def send_message(self, chat_id: str, text: str) -> str:
+        url = f"{self.base_url}/sendMessage"
+        response = requests.post(
+            url,
+            data={"chat_id": chat_id, "text": text},
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        if not payload.get("ok"):
+            raise RuntimeError(f"Telegram API error: {payload}")
+
+        message_id = payload.get("result", {}).get("message_id")
+        logger.info("Telegram message sent chat_id=%s message_id=%s", chat_id, message_id)
+        return str(message_id)

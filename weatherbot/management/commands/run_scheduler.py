@@ -5,6 +5,7 @@ import time
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db.utils import OperationalError
@@ -66,7 +67,7 @@ class Command(BaseCommand):
                 args=[schedule.forecast_type],
                 max_instances=1,
                 coalesce=True,
-                misfire_grace_time=600,
+                misfire_grace_time=settings.SCHEDULER_MISFIRE_GRACE_SECONDS,
             )
 
         for job in scheduler.get_jobs():
