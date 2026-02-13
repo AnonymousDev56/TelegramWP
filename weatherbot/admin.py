@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.shortcuts import redirect
+from django.urls import reverse
 
 from .models import BotConfig, Channel, City, PublicationLog, Schedule
 
@@ -29,10 +31,21 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(BotConfig)
 class BotConfigAdmin(admin.ModelAdmin):
-    list_display = ("service_enabled", "default_city", "updated_at")
+    list_display = ("config_label", "service_enabled", "default_city", "updated_at")
+    list_display_links = ("config_label",)
+
+    def config_label(self, _obj):
+        return "Открыть настройки"
+
+    config_label.short_description = "Конфиг"
 
     def has_add_permission(self, request):
         return not BotConfig.objects.exists()
+
+    def changelist_view(self, request, extra_context=None):
+        config = BotConfig.get_solo()
+        change_url = reverse("admin:weatherbot_botconfig_change", args=[config.pk])
+        return redirect(change_url)
 
 
 @admin.register(PublicationLog)
