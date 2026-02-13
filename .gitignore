@@ -6,6 +6,11 @@ __pycache__/
 venv/
 staticfiles/
 media/videos/*.mp4
+!media/videos/sunny.mp4
+!media/videos/cloudy.mp4
+!media/videos/rain.mp4
+!media/videos/snow.mp4
+!media/videos/thunderstorm.mp4
 !.gitkeep
 
 *:Zone.Identifier
