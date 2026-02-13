@@ -159,4 +159,14 @@ git remote add origin https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
 git push -u origin main
 ```
 
+## Auto CI/CD (GitHub Actions -> Render)
+
+CI уже запускается на каждый push/PR: `check`, `test`, `docker build`.
+
+Для автодеплоя на Render:
+1. Render -> `Settings` -> `Deploy Hook` -> скопируй URL.
+2. GitHub repo -> `Settings` -> `Secrets and variables` -> `Actions` -> `New repository secret`.
+3. Создай секрет `RENDER_DEPLOY_HOOK_URL` и вставь туда URL хука.
+4. После этого каждый push в `main` будет автоматически деплоить сервис на Render (после успешного CI).
+
 Live demo: https://telegram-weather-publisher.onrender.com
