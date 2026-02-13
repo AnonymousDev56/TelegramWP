@@ -169,4 +169,6 @@ CI уже запускается на каждый push/PR: `check`, `test`, `do
 3. Создай секрет `RENDER_DEPLOY_HOOK_URL` и вставь туда URL хука.
 4. После этого каждый push в `main` будет автоматически деплоить сервис на Render (после успешного CI).
 
+CI/CD smoke test: enabled and verified on February 13, 2026.
+
 Live demo: https://telegram-weather-publisher.onrender.com
