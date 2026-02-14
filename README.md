@@ -184,4 +184,20 @@ CI уже запускается на каждый push/PR: `check`, `test`, `do
 
 CI/CD smoke test: enabled and verified on February 13, 2026.
 
+## Reliable Scheduling via GitHub Actions Cron
+
+Для free Render (sleep) можно запускать публикации по расписанию через GitHub Actions.
+
+1. В Render env добавь:
+   - `CRON_SECRET_TOKEN` (длинный случайный токен)
+   - `ENABLE_INTERNAL_SCHEDULER=False` (чтобы не дублировать внутренний scheduler)
+2. В GitHub Secrets добавь:
+   - `PUBLISH_BASE_URL` (например `https://telegram-weather-publisher.onrender.com`)
+   - `CRON_SECRET_TOKEN` (тот же токен, что в Render env)
+3. Workflow `.github/workflows/scheduled_publish.yml` запускает:
+   - `today` в 08:00 Asia/Almaty (`03:00 UTC`)
+   - `tomorrow` в 14:00 Asia/Almaty (`09:00 UTC`)
+   - `three_days` в 20:00 Asia/Almaty (`15:00 UTC`)
+4. Для ручной проверки: GitHub -> Actions -> `Scheduled Publish` -> `Run workflow`.
+
 Live demo: https://telegram-weather-publisher.onrender.com

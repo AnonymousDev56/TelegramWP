@@ -1,0 +1,58 @@
+name: Scheduled Publish
+
+on:
+  schedule:
+    # Asia/Almaty (UTC+5): 08:00, 14:00, 20:00 local
+    - cron: "0 3 * * *"
+    - cron: "0 9 * * *"
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+    inputs:
+      forecast_type:
+        description: "Type to publish"
+        required: true
+        type: choice
+        options:
+          - today
+          - tomorrow
+          - three_days
+
+jobs:
+  publish-today:
+    if: (github.event_name == 'schedule' && github.event.schedule == '0 3 * * *') || (github.event_name == 'workflow_dispatch' && inputs.forecast_type == 'today')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger today publish
+        env:
+          PUBLISH_BASE_URL: ${{ secrets.PUBLISH_BASE_URL }}
+          CRON_SECRET_TOKEN: ${{ secrets.CRON_SECRET_TOKEN }}
+        run: |
+          test -n "${PUBLISH_BASE_URL}" || (echo "PUBLISH_BASE_URL is missing" && exit 1)
+          test -n "${CRON_SECRET_TOKEN}" || (echo "CRON_SECRET_TOKEN is missing" && exit 1)
+          curl -fsS -X POST "${PUBLISH_BASE_URL}/internal/publish/today/" -H "X-Cron-Token: ${CRON_SECRET_TOKEN}"
+
+  publish-tomorrow:
+    if: (github.event_name == 'schedule' && github.event.schedule == '0 9 * * *') || (github.event_name == 'workflow_dispatch' && inputs.forecast_type == 'tomorrow')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger tomorrow publish
+        env:
+          PUBLISH_BASE_URL: ${{ secrets.PUBLISH_BASE_URL }}
+          CRON_SECRET_TOKEN: ${{ secrets.CRON_SECRET_TOKEN }}
+        run: |
+          test -n "${PUBLISH_BASE_URL}" || (echo "PUBLISH_BASE_URL is missing" && exit 1)
+          test -n "${CRON_SECRET_TOKEN}" || (echo "CRON_SECRET_TOKEN is missing" && exit 1)
+          curl -fsS -X POST "${PUBLISH_BASE_URL}/internal/publish/tomorrow/" -H "X-Cron-Token: ${CRON_SECRET_TOKEN}"
+
+  publish-three-days:
+    if: (github.event_name == 'schedule' && github.event.schedule == '0 15 * * *') || (github.event_name == 'workflow_dispatch' && inputs.forecast_type == 'three_days')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger three_days publish
+        env:
+          PUBLISH_BASE_URL: ${{ secrets.PUBLISH_BASE_URL }}
+          CRON_SECRET_TOKEN: ${{ secrets.CRON_SECRET_TOKEN }}
+        run: |
+          test -n "${PUBLISH_BASE_URL}" || (echo "PUBLISH_BASE_URL is missing" && exit 1)
+          test -n "${CRON_SECRET_TOKEN}" || (echo "CRON_SECRET_TOKEN is missing" && exit 1)
+          curl -fsS -X POST "${PUBLISH_BASE_URL}/internal/publish/three_days/" -H "X-Cron-Token: ${CRON_SECRET_TOKEN}"

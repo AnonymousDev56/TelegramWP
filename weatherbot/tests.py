@@ -1,4 +1,6 @@
-from django.test import TestCase
+from unittest.mock import patch
+
+from django.test import Client, TestCase, override_settings
 
 from weatherbot.content import build_caption, choose_visual_weather_type
 from weatherbot.models import ForecastType
@@ -30,3 +32,24 @@ class ContentTests(TestCase):
         ]
         visual_type = choose_visual_weather_type(ForecastType.THREE_DAYS, days)
         self.assertEqual(visual_type, "snow")
+
+
+class InternalPublishEndpointTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    @override_settings(CRON_SECRET_TOKEN="secret-123")
+    def test_internal_publish_requires_valid_token(self):
+        response = self.client.post("/internal/publish/today/")
+        self.assertEqual(response.status_code, 401)
+
+    @override_settings(CRON_SECRET_TOKEN="secret-123")
+    @patch("weatherbot.views.WeatherPublisher.publish", return_value=1)
+    def test_internal_publish_success(self, mocked_publish):
+        response = self.client.post(
+            "/internal/publish/today/",
+            HTTP_X_CRON_TOKEN="secret-123",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["published"], 1)
+        mocked_publish.assert_called_once_with("today")

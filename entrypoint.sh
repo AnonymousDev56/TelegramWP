@@ -28,7 +28,11 @@ case "${1:-web}" in
     exec python manage.py run_scheduler
     ;;
   all)
-    python manage.py run_scheduler &
+    if [ "${ENABLE_INTERNAL_SCHEDULER:-true}" = "true" ]; then
+      python manage.py run_scheduler &
+    else
+      echo "Internal scheduler is disabled (ENABLE_INTERNAL_SCHEDULER=false)"
+    fi
     exec gunicorn telegram_weather_publisher.wsgi:application --bind 0.0.0.0:8000 --workers 1
     ;;
   *)

@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
 
-from weatherbot.views import home
+from weatherbot.views import home, internal_publish
 
 
 def healthcheck(_request):
@@ -15,6 +15,11 @@ urlpatterns = [
     path("", home, name="home"),
     path("admin/", admin.site.urls),
     path("health/", healthcheck, name="healthcheck"),
+    path(
+        "internal/publish/<str:forecast_type>/",
+        internal_publish,
+        name="internal_publish",
+    ),
 ]
 
 if settings.DEBUG:
