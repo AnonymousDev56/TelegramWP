@@ -44,6 +44,17 @@ def _format_description(day: DayForecast) -> str:
     return day.weather_label_ru
 
 
+def _format_extra_metrics(day: DayForecast) -> list[str]:
+    lines = []
+    if day.humidity_mean is not None:
+        lines.append(f"Влажность: {round(day.humidity_mean)}%")
+    if day.wind_speed_max is not None:
+        lines.append(f"Ветер: до {round(day.wind_speed_max)} км/ч")
+    if day.precipitation_probability_max is not None:
+        lines.append(f"Осадки: {round(day.precipitation_probability_max)}%")
+    return lines
+
+
 def build_caption(city_name: str, forecast_type: str, forecast: list[DayForecast]) -> str:
     title = TITLE_BY_FORECAST[forecast_type]
 
@@ -53,15 +64,18 @@ def build_caption(city_name: str, forecast_type: str, forecast: list[DayForecast
             f"🌤 Погода в {city_name}\n\n"
             f"{title}:\n"
             f"Температура: {round(day.temp_min)}..{round(day.temp_max)}°C\n"
-            f"Описание: {_format_description(day)}\n\n"
+            f"Описание: {_format_description(day)}\n"
+            f"{chr(10).join(_format_extra_metrics(day))}\n\n"
             "Хорошего дня ☀️"
         )
 
     lines = [f"🌤 Погода в {city_name}", "", f"{title}:"]
     for day in forecast:
-        lines.append(
-            f"{day.date}: {round(day.temp_min)}..{round(day.temp_max)}°C, {_format_description(day)}"
-        )
+        line = f"{day.date}: {round(day.temp_min)}..{round(day.temp_max)}°C, {_format_description(day)}"
+        extras = _format_extra_metrics(day)
+        if extras:
+            line = f"{line}; " + ", ".join(extras)
+        lines.append(line)
     lines.extend(["", "Отличной погоды ☀️"])
     return "\n".join(lines)
 

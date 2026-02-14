@@ -56,6 +56,9 @@ class DayForecast:
     temp_min: float
     temp_max: float
     weather_code: int
+    humidity_mean: float | None = None
+    wind_speed_max: float | None = None
+    precipitation_probability_max: float | None = None
 
     @property
     def weather_type(self) -> str:
@@ -96,7 +99,10 @@ class WeatherClient:
             params={
                 "latitude": latitude,
                 "longitude": longitude,
-                "daily": "weather_code,temperature_2m_max,temperature_2m_min",
+                "daily": (
+                    "weather_code,temperature_2m_max,temperature_2m_min,"
+                    "relative_humidity_2m_mean,wind_speed_10m_max,precipitation_probability_max"
+                ),
                 "forecast_days": max(days, 1),
                 "timezone": "auto",
             },
@@ -110,6 +116,9 @@ class WeatherClient:
         temp_max = daily.get("temperature_2m_max", [])
         temp_min = daily.get("temperature_2m_min", [])
         weather_codes = daily.get("weather_code") or daily.get("weathercode", [])
+        humidity_mean = daily.get("relative_humidity_2m_mean", [])
+        wind_speed_max = daily.get("wind_speed_10m_max", [])
+        precipitation_probability_max = daily.get("precipitation_probability_max", [])
 
         forecast = []
         for index, date in enumerate(dates):
@@ -120,6 +129,13 @@ class WeatherClient:
                         temp_min=temp_min[index],
                         temp_max=temp_max[index],
                         weather_code=weather_codes[index],
+                        humidity_mean=humidity_mean[index] if index < len(humidity_mean) else None,
+                        wind_speed_max=wind_speed_max[index] if index < len(wind_speed_max) else None,
+                        precipitation_probability_max=(
+                            precipitation_probability_max[index]
+                            if index < len(precipitation_probability_max)
+                            else None
+                        ),
                     )
                 )
             except IndexError:
