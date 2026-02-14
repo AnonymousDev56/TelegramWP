@@ -32,6 +32,8 @@ class Command(BaseCommand):
         signal.signal(signal.SIGTERM, shutdown_handler)
 
         self._sync_jobs(scheduler)
+        if settings.SCHEDULER_STARTUP_CATCHUP:
+            self._run_startup_catchup()
         scheduler.start()
         logger.info("Scheduler started")
 
@@ -78,3 +80,23 @@ class Command(BaseCommand):
     def _run_publication(forecast_type: str) -> None:
         logger.info("Trigger publication type=%s", forecast_type)
         call_command("publish_forecast", forecast_type)
+
+    def _run_startup_catchup(self) -> None:
+        """
+        Run once on scheduler startup to catch missed slots after process downtime.
+        Publish is idempotent, so repeated runs are safe.
+        """
+        now = timezone.localtime()
+        now_hhmm = now.time().replace(second=0, microsecond=0)
+        logger.info("Startup catch-up check at %s", now.strftime("%Y-%m-%d %H:%M:%S %Z"))
+
+        schedules = list(Schedule.objects.filter(active=True))
+        for schedule in schedules:
+            schedule_hhmm = schedule.publish_time.replace(second=0, microsecond=0)
+            if schedule_hhmm <= now_hhmm:
+                logger.info(
+                    "Startup catch-up trigger type=%s slot=%s",
+                    schedule.forecast_type,
+                    schedule.publish_time.strftime("%H:%M"),
+                )
+                self._run_publication(schedule.forecast_type)

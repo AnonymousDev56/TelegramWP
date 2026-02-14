@@ -106,6 +106,8 @@ python manage.py publish_forecast three_days
 - `TELEGRAM_BOT_TOKEN` - токен Telegram-бота
 - `WEATHER_API_BASE_URL` - URL weather API
 - `DEFAULT_REQUEST_TIMEOUT` - timeout HTTP-запросов
+- `SCHEDULER_MISFIRE_GRACE_SECONDS` - окно (сек) для запуска пропущенных cron-задач
+- `SCHEDULER_STARTUP_CATCHUP` - догонять пропущенные слоты при старте scheduler (`True/False`)
 - `DJANGO_SUPERUSER_USERNAME` - логин админа
 - `DJANGO_SUPERUSER_EMAIL` - email админа
 - `DJANGO_SUPERUSER_PASSWORD` - пароль админа
