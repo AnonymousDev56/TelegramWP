@@ -59,7 +59,11 @@ class DayForecast:
 
     @property
     def weather_type(self) -> str:
-        return WEATHER_TYPE_BY_CODE.get(self.weather_code, "cloudy")
+        weather_type = WEATHER_TYPE_BY_CODE.get(self.weather_code)
+        if weather_type is None:
+            logger.warning("Unknown weather code=%s, fallback to 'cloudy'", self.weather_code)
+            return "cloudy"
+        return weather_type
 
     @property
     def weather_label_ru(self) -> str:

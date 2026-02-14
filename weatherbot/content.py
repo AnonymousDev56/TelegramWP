@@ -21,6 +21,28 @@ TITLE_BY_FORECAST = {
     ForecastType.THREE_DAYS: "Ближайшие 3 дня",
 }
 
+WEATHER_TYPE_PRIORITY = {
+    "thunderstorm": 5,
+    "snow": 4,
+    "rain": 3,
+    "cloudy": 2,
+    "sunny": 1,
+}
+
+
+def choose_visual_weather_type(forecast_type: str, forecast: list[DayForecast]) -> str:
+    if not forecast:
+        return "cloudy"
+    if forecast_type in {ForecastType.TODAY, ForecastType.TOMORROW}:
+        return forecast[0].weather_type
+    return max(forecast, key=lambda day: WEATHER_TYPE_PRIORITY.get(day.weather_type, 0)).weather_type
+
+
+def _format_description(day: DayForecast) -> str:
+    if settings.WEATHER_INCLUDE_CODE_IN_CAPTION:
+        return f"{day.weather_label_ru} (код: {day.weather_code})"
+    return day.weather_label_ru
+
 
 def build_caption(city_name: str, forecast_type: str, forecast: list[DayForecast]) -> str:
     title = TITLE_BY_FORECAST[forecast_type]
@@ -31,14 +53,14 @@ def build_caption(city_name: str, forecast_type: str, forecast: list[DayForecast
             f"🌤 Погода в {city_name}\n\n"
             f"{title}:\n"
             f"Температура: {round(day.temp_min)}..{round(day.temp_max)}°C\n"
-            f"Описание: {day.weather_label_ru}\n\n"
+            f"Описание: {_format_description(day)}\n\n"
             "Хорошего дня ☀️"
         )
 
     lines = [f"🌤 Погода в {city_name}", "", f"{title}:"]
     for day in forecast:
         lines.append(
-            f"{day.date}: {round(day.temp_min)}..{round(day.temp_max)}°C, {day.weather_label_ru}"
+            f"{day.date}: {round(day.temp_min)}..{round(day.temp_max)}°C, {_format_description(day)}"
         )
     lines.extend(["", "Отличной погоды ☀️"])
     return "\n".join(lines)

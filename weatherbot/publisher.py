@@ -6,7 +6,7 @@ from typing import Iterable
 
 from django.db import IntegrityError, transaction
 
-from .content import build_caption, pick_video_path
+from .content import build_caption, choose_visual_weather_type, pick_video_path
 from .models import BotConfig, Channel, City, ForecastType, PublicationLog
 from .telegram_api import TelegramClient
 from .weather_api import WeatherClient
@@ -35,9 +35,17 @@ class WeatherPublisher:
         selected_days = self._select_days(forecast_type, forecast)
         primary_day = selected_days[0]
         target_date = date.fromisoformat(primary_day.date)
+        visual_weather_type = choose_visual_weather_type(forecast_type, selected_days)
 
         caption = build_caption(city.name, forecast_type, selected_days)
-        video_path = pick_video_path(primary_day.weather_type)
+        video_path = pick_video_path(visual_weather_type)
+        logger.info(
+            "Prepared forecast type=%s target_date=%s weather_code=%s weather_type=%s",
+            forecast_type,
+            target_date,
+            primary_day.weather_code,
+            visual_weather_type,
+        )
 
         successful = 0
         for channel in channels:
