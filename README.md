@@ -17,7 +17,7 @@
 <img width="1919" height="984" alt="main" src="https://github.com/user-attachments/assets/64057398-9d66-48a4-95d8-cbd18501e80e" />
 <img width="1919" height="997" alt="admin" src="https://github.com/user-attachments/assets/6877939e-dacf-47d7-892f-ecc8b671d83b" />
 <img width="1919" height="1001" alt="schedules" src="https://github.com/user-attachments/assets/a13d2231-2910-400a-9f52-344102158067" />
-<img width="1261" height="929" alt="telegram" src="https://github.com/user-attachments/assets/3138d0e0-92af-439e-b570-74ea593de736" />
+<img width="1256" height="947" alt="image" src="https://github.com/user-attachments/assets/fff44338-a5a6-4833-88ce-1205892cba38" />
 <img width="1910" height="1000" alt="actions" src="https://github.com/user-attachments/assets/17f2fe63-2c06-4135-ac3b-65ede6babb98" />
 
 ## Архитектура
