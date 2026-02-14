@@ -44,12 +44,13 @@ class InternalPublishEndpointTests(TestCase):
         self.assertEqual(response.status_code, 401)
 
     @override_settings(CRON_SECRET_TOKEN="secret-123")
-    @patch("weatherbot.views.WeatherPublisher.publish", return_value=1)
-    def test_internal_publish_success(self, mocked_publish):
+    @patch("weatherbot.views.WeatherPublisher")
+    def test_internal_publish_success(self, mocked_publisher_cls):
+        mocked_publisher_cls.return_value.publish.return_value = 1
         response = self.client.post(
             "/internal/publish/today/",
             HTTP_X_CRON_TOKEN="secret-123",
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["published"], 1)
-        mocked_publish.assert_called_once_with("today")
+        mocked_publisher_cls.return_value.publish.assert_called_once_with("today")
