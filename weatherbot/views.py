@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 
 from django.conf import settings
 from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import BotConfig, Channel, City, ForecastType, Schedule
+from .models import BotConfig, Channel, City, ForecastType, PublicationLog, Schedule
 from .publisher import WeatherPublisher
 
 logger = logging.getLogger(__name__)
@@ -48,10 +50,49 @@ def internal_publish(request, forecast_type: str):
         logger.exception("Internal publish failed type=%s", forecast_type)
         return JsonResponse({"detail": str(exc)}, status=500)
 
+    diagnostics = _build_publish_diagnostics(forecast_type, published)
     return JsonResponse(
         {
             "status": "ok",
             "forecast_type": forecast_type,
             "published": published,
+            "diagnostics": diagnostics,
         }
     )
+
+
+def _build_publish_diagnostics(forecast_type: str, published: int) -> dict:
+    config = BotConfig.get_solo()
+    active_channels = list(Channel.objects.filter(active=True))
+    active_city = config.default_city or City.objects.filter(active=True).first()
+
+    today = timezone.localdate()
+    target_date = today
+    if forecast_type == ForecastType.TOMORROW:
+        target_date = today + timedelta(days=1)
+
+    successful_today = PublicationLog.objects.filter(
+        channel__in=active_channels,
+        forecast_type=forecast_type,
+        target_date=target_date,
+        success=True,
+    ).count()
+
+    reasons = []
+    if not config.service_enabled:
+        reasons.append("service_disabled")
+    if not active_channels:
+        reasons.append("no_active_channels")
+    if not active_city:
+        reasons.append("no_active_city")
+    if published == 0 and successful_today > 0:
+        reasons.append("already_published_for_target_date")
+
+    return {
+        "service_enabled": config.service_enabled,
+        "active_channels": len(active_channels),
+        "active_city": active_city.name if active_city else None,
+        "target_date": str(target_date),
+        "successful_logs_for_target_date": successful_today,
+        "reasons": reasons,
+    }
