@@ -29,7 +29,14 @@ case "${1:-web}" in
     ;;
   all)
     if [ "${ENABLE_INTERNAL_SCHEDULER:-true}" = "true" ]; then
-      python manage.py run_scheduler &
+      (
+        while true; do
+          echo "Starting scheduler process..."
+          python manage.py run_scheduler
+          echo "Scheduler process exited; restarting in 5s..."
+          sleep 5
+        done
+      ) &
     else
       echo "Internal scheduler is disabled (ENABLE_INTERNAL_SCHEDULER=false)"
     fi
