@@ -120,3 +120,8 @@ CRON_SECRET_TOKEN = os.getenv("CRON_SECRET_TOKEN", "")
 WEATHER_INCLUDE_CODE_IN_CAPTION = (
     os.getenv("WEATHER_INCLUDE_CODE_IN_CAPTION", "False").lower() == "true"
 )
+TEST_PUBLISH_EVERY_MINUTE = os.getenv("TEST_PUBLISH_EVERY_MINUTE", "False").lower() == "true"
+TEST_PUBLISH_FORECAST_TYPE = os.getenv("TEST_PUBLISH_FORECAST_TYPE", "today")
+ALLOW_DUPLICATE_PUBLICATIONS = (
+    os.getenv("ALLOW_DUPLICATE_PUBLICATIONS", "False").lower() == "true"
+)

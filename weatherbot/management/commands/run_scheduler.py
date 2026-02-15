@@ -5,6 +5,7 @@ import time
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
@@ -70,6 +71,20 @@ class Command(BaseCommand):
                 max_instances=1,
                 coalesce=True,
                 misfire_grace_time=settings.SCHEDULER_MISFIRE_GRACE_SECONDS,
+            )
+
+        if settings.TEST_PUBLISH_EVERY_MINUTE:
+            test_job_id = "publish_test_every_minute"
+            active_ids.add(test_job_id)
+            scheduler.add_job(
+                self._run_publication,
+                trigger=IntervalTrigger(minutes=1),
+                id=test_job_id,
+                replace_existing=True,
+                args=[settings.TEST_PUBLISH_FORECAST_TYPE],
+                max_instances=1,
+                coalesce=True,
+                misfire_grace_time=120,
             )
 
         for job in scheduler.get_jobs():

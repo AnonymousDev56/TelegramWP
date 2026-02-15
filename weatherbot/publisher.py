@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 from datetime import date
-from typing import Iterable
 
+from django.conf import settings
 from django.db import IntegrityError, transaction
 
 from .content import build_caption, choose_visual_weather_type, pick_video_path
@@ -100,6 +100,8 @@ class WeatherPublisher:
 
     @staticmethod
     def _is_already_published(channel: Channel, forecast_type: str, target_date: date) -> bool:
+        if settings.ALLOW_DUPLICATE_PUBLICATIONS:
+            return False
         return PublicationLog.objects.filter(
             channel=channel,
             forecast_type=forecast_type,
