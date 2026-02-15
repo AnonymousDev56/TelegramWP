@@ -2,9 +2,8 @@ name: Scheduled Publish
 
 on:
   schedule:
-    # Test mode: run every 5 minutes
-    - cron: "*/5 * * * *"
-    - cron: "*/5 * * * *" # for testing, every 5 minutes
+    # Test mode: run every 5 minutes (offset from minute 2 to reduce contention)
+    - cron: "2-59/5 * * * *"
   workflow_dispatch:
     inputs:
       forecast_type:
@@ -30,7 +29,7 @@ jobs:
               "0 3 * * *") TYPE="today" ;;
               "0 9 * * *") TYPE="tomorrow" ;;
               "0 15 * * *") TYPE="three_days" ;;
-              "*/5 * * * *") TYPE="today" ;;
+              "2-59/5 * * * *") TYPE="today" ;;
               *) TYPE="today" ;;
             esac
           fi
