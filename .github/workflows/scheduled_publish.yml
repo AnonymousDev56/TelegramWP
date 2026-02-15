@@ -18,41 +18,34 @@ on:
           - three_days
 
 jobs:
-  publish-today:
-    if: (github.event_name == 'schedule' && github.event.schedule == '0 3 * * *') || (github.event_name == 'workflow_dispatch' && inputs.forecast_type == 'today')
+  publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger today publish
-        env:
-          PUBLISH_BASE_URL: ${{ secrets.PUBLISH_BASE_URL }}
-          CRON_SECRET_TOKEN: ${{ secrets.CRON_SECRET_TOKEN }}
+      - name: Resolve forecast type
+        id: resolve
         run: |
-          test -n "${PUBLISH_BASE_URL}" || (echo "PUBLISH_BASE_URL is missing" && exit 1)
-          test -n "${CRON_SECRET_TOKEN}" || (echo "CRON_SECRET_TOKEN is missing" && exit 1)
-          curl -fsS -X POST "${PUBLISH_BASE_URL}/internal/publish/today/" -H "X-Cron-Token: ${CRON_SECRET_TOKEN}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TYPE="${{ inputs.forecast_type }}"
+          else
+            case "${{ github.event.schedule }}" in
+              "0 3 * * *") TYPE="today" ;;
+              "0 9 * * *") TYPE="tomorrow" ;;
+              "0 15 * * *") TYPE="three_days" ;;
+              *)
+                echo "Unexpected cron expression: ${{ github.event.schedule }}"
+                exit 1
+                ;;
+            esac
+          fi
+          echo "forecast_type=${TYPE}" >> "$GITHUB_OUTPUT"
 
-  publish-tomorrow:
-    if: (github.event_name == 'schedule' && github.event.schedule == '0 9 * * *') || (github.event_name == 'workflow_dispatch' && inputs.forecast_type == 'tomorrow')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger tomorrow publish
+      - name: Trigger publish
         env:
           PUBLISH_BASE_URL: ${{ secrets.PUBLISH_BASE_URL }}
           CRON_SECRET_TOKEN: ${{ secrets.CRON_SECRET_TOKEN }}
         run: |
           test -n "${PUBLISH_BASE_URL}" || (echo "PUBLISH_BASE_URL is missing" && exit 1)
           test -n "${CRON_SECRET_TOKEN}" || (echo "CRON_SECRET_TOKEN is missing" && exit 1)
-          curl -fsS -X POST "${PUBLISH_BASE_URL}/internal/publish/tomorrow/" -H "X-Cron-Token: ${CRON_SECRET_TOKEN}"
-
-  publish-three-days:
-    if: (github.event_name == 'schedule' && github.event.schedule == '0 15 * * *') || (github.event_name == 'workflow_dispatch' && inputs.forecast_type == 'three_days')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger three_days publish
-        env:
-          PUBLISH_BASE_URL: ${{ secrets.PUBLISH_BASE_URL }}
-          CRON_SECRET_TOKEN: ${{ secrets.CRON_SECRET_TOKEN }}
-        run: |
-          test -n "${PUBLISH_BASE_URL}" || (echo "PUBLISH_BASE_URL is missing" && exit 1)
-          test -n "${CRON_SECRET_TOKEN}" || (echo "CRON_SECRET_TOKEN is missing" && exit 1)
-          curl -fsS -X POST "${PUBLISH_BASE_URL}/internal/publish/three_days/" -H "X-Cron-Token: ${CRON_SECRET_TOKEN}"
+          TYPE="${{ steps.resolve.outputs.forecast_type }}"
+          echo "Triggering type=${TYPE}"
+          curl -fsS -X POST "${PUBLISH_BASE_URL}/internal/publish/${TYPE}/" -H "X-Cron-Token: ${CRON_SECRET_TOKEN}"
