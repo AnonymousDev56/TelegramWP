@@ -2,8 +2,10 @@ name: Scheduled Publish
 
 on:
   schedule:
-    # Test mode: run every 5 minutes (offset from minute 2 to reduce contention)
-    - cron: "2-59/5 * * * *"
+    # Asia/Almaty (UTC+5): 08:00, 14:00, 20:00 local
+    - cron: "0 3 * * *"
+    - cron: "0 9 * * *"
+    - cron: "0 15 * * *"
   workflow_dispatch:
     inputs:
       forecast_type:
@@ -29,8 +31,10 @@ jobs:
               "0 3 * * *") TYPE="today" ;;
               "0 9 * * *") TYPE="tomorrow" ;;
               "0 15 * * *") TYPE="three_days" ;;
-              "2-59/5 * * * *") TYPE="today" ;;
-              *) TYPE="today" ;;
+              *)
+                echo "Unexpected cron expression: ${{ github.event.schedule }}"
+                exit 1
+                ;;
             esac
           fi
           echo "forecast_type=${TYPE}" >> "$GITHUB_OUTPUT"
